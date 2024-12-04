@@ -46,8 +46,8 @@ async def on_message(message: Message):
         return
     
     if client.user.mentioned_in(message):
-        response = get_response(message)
-        await send_message(message, response)
+        message_str = message.content
+        await send_message(message, message_str)
 
 def main():
     client.run(token=TOKEN)
