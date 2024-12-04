@@ -26,13 +26,10 @@ async def send_message(message: Message, user_message: str) -> None:
     if not user_message:
         print("Report this error to epicgamerryt (error code: 1)")
         return
-    
-    if is_private := user_message[0] == '?':
-        user_message = user_message[1:]
 
     try:
         response = get_response(user_message)
-        await message.channel.send(response) if is_private else await message.channel.send(response)
+        await message.channel.send(response)
     except Exception as e:
         print(f"Error: {e}")
 
@@ -47,9 +44,10 @@ async def on_ready() -> None:
 async def on_message(message: Message):
     if message.author == client.user:
         return
-
-    response = get_response(message.content)
-    await send_message(message, response)
+    
+    if client.user.mentioned_in(message):
+        response = get_response(message)
+        await send_message(message, response)
 
 def main():
     client.run(token=TOKEN)
