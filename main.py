@@ -1,16 +1,19 @@
 import os
 from dotenv import load_dotenv
 from discord import Intents, Client, Message
-from responses import get_response
+from discord.ext import commands
+from responses import get_response, display_lol_info
 
 # Load Token
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
+# Configure Intents
 intents = Intents.default()
 intents.message_content = True
-client = Client(intents=intents)
 
+# Initialize Bot
+bot = commands.Bot(command_prefix='/', intents=intents)
 
 async def send_message(message: Message, user_message: str) -> None:
     """
@@ -35,22 +38,45 @@ async def send_message(message: Message, user_message: str) -> None:
 
 
 # HANDLE STARTUP
-@client.event
+@bot.event
 async def on_ready() -> None:
-    print('We have logged in as {0.user}'.format(client))
+    print(f'We have logged in as {bot.user}')
 
 
-@client.event
+# BOT FUNCTIONALITIES
+@bot.event
 async def on_message(message: Message):
-    if message.author == client.user:
+    if message.author == bot.user:
         return
     
-    if client.user.mentioned_in(message):
+    if bot.user.mentioned_in(message):
         message_str = message.content
         await send_message(message, message_str)
 
+    await bot.process_commands(message)
+
+@bot.command(name="lolinfo")
+async def lolinfo(ctx, *, riot_id: str):
+    """
+    Responds with stats for a League of Legends player.
+    """
+    try:
+        if "#" not in riot_id:
+            await ctx.send("Invalid format! Use `/lolinfo <name>#<tag>`.")
+            return
+        
+        riot_ign, tag = riot_id.split("#", 1)
+        
+        result = display_lol_info(riot_ign, tag)
+        
+        await ctx.send(result)
+    except Exception as e:
+        await ctx.send(f"An error occurred: {str(e)}")
+
+
+# MAIN
 def main():
-    client.run(token=TOKEN)
+    bot.run(TOKEN)
 
 if __name__ == "__main__":
     main()
