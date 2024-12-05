@@ -15,21 +15,18 @@ def get_acc_info(riot_ign: str, tag: str):
     url = f"https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{riot_ign}/{tag}"
     headers = {"X-Riot-Token": RIOT_GAMES_API_KEY}
     response = requests.get(url, headers=headers)
-    print(response.json())
     return response.json()
 
 def get_summoner_info(puuid: str):
     url = f"https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
     headers = {"X-Riot-Token": RIOT_GAMES_API_KEY}
     response = requests.get(url, headers=headers)
-    print(response.json())
     return response.json()
 
 def get_lol_info(summoner_id: str):
     url = f"https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/{summoner_id}"
     headers = {"X-Riot-Token": RIOT_GAMES_API_KEY}
     response = requests.get(url, headers=headers)
-    print(response.json())
     return response.json()
 
 def display_lol_info(riot_ign: str, tag: str) -> str:
